@@ -10,7 +10,13 @@ def movie_list_api_view(request):
         movie = models.Movie.objects.all()
         data = serializers.MovieSerializer(movie, many=True).data
         return Response(data=data)
+
     elif request.method == 'POST':
+        serializer = serializers.MovieUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(data={'errors': serializer.errors}, status=status.HTTP_406_NOT_ACCEPTABLE)
+        print(request.data)
+
         # print(request.data)
         # title = request.data.get('title')
         # description = request.data.get('description')
@@ -57,6 +63,11 @@ def director_list_api_view(request):
         data = serializers.DirectorSerializer(director, many=True).data
         return Response(data=data)
     elif request.method == 'POST':
+
+        serializer = serializers.DirectorUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(data={'errors': serializer.errors}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         director = models.Director.objects.create(**request.data)
         return Response(data=serializers.DirectorSerializer(director).data,
                         status=status.HTTP_201_CREATED)
@@ -89,6 +100,11 @@ def review_list_api_view(request):
         data = serializers.ReviewSerializer(review, many=True).data
         return Response(data=data)
     elif request.method == 'POST':
+
+        serializer = serializers.ReviewUpdateSerializer(data=request.data)
+        if not serializer.is_valid():
+            return Response(data={'errors': serializer.errors}, status=status.HTTP_406_NOT_ACCEPTABLE)
+
         review = models.Review.objects.create(**request.data)
         return Response(data=serializers.ReviewSerializer(review).data,
                         status=status.HTTP_201_CREATED)
@@ -114,4 +130,3 @@ def review_detail_api_view(request, id):
         reviews.stars = request.data.get('stars')
         reviews.save()
         return Response(data=serializers.ReviewSerializer(reviews).data)
-
